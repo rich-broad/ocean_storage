@@ -1,0 +1,52 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+syntax="proto2";
+package ocean_kv;
+
+option cc_generic_services = true;
+
+
+message IndexInfo {
+      required uint32 file_id = 1; // key对应value所在文件id
+      required uint32 total_length = 2;
+      required uint32 head_length = 3;
+      required uint64 shift = 4;
+}
+
+message GetIndexInfoRequest {
+      required string key = 1;
+};
+
+message GetIndexInfoResponse {
+      required uint32 code = 1;
+      required IndexInfo index_info = 2;
+};
+
+message SetIndexInfoRequest {
+      required string key = 1;
+      required IndexInfo index_info = 2;
+};
+
+message SetIndexInfoResponse {
+      required uint32 code = 1;
+};
+
+service IndexService {
+      rpc GetIndexInfo(GetIndexInfoRequest) returns (GetIndexInfoResponse);
+      rpc SetIndexInfo(SetIndexInfoRequest) returns (SetIndexInfoResponse);
+};
