@@ -15,35 +15,35 @@
 // specific language governing permissions and limitations
 // under the License.
 
-syntax="proto2";
+syntax="proto3";
 package ocean_kv.index;
 
 option cc_generic_services = true;
 
 
 message IndexInfo {
-      required uint32 file_id = 1; // key对应value所在文件id
-      required uint32 total_length = 2;
-      required uint32 head_length = 3;
-      required uint64 shift = 4;
+      uint32 file_id = 1; // key对应value所在文件id
+      uint32 total_length = 2;
+      uint32 head_length = 3;
+      uint64 shift = 4;
 }
 
 message GetIndexInfoRequest {
-      required string key = 1;
+      string key = 1;
 };
 
 message GetIndexInfoResponse {
-      required uint32 code = 1;
-      required IndexInfo index_info = 2;
+      uint32 code = 1;
+      IndexInfo index_info = 2;
 };
 
 message SetIndexInfoRequest {
-      required string key = 1;
-      required IndexInfo index_info = 2;
+      string key = 1;
+      IndexInfo index_info = 2;
 };
 
 message SetIndexInfoResponse {
-      required uint32 code = 1;
+      uint32 code = 1;
 };
 
 service IndexService {

@@ -44,6 +44,19 @@ public:
                       const HeartBeatRequest* request,
                       HeartBeatResponse* response,
                       google::protobuf::Closure* done);
+    virtual void UpdateFileInfo(google::protobuf::RpcController* cntl_base,
+                      const UpdateFileInfoRequest* request,
+                      UpdateFileInfoResponse* response,
+                      google::protobuf::Closure* done);
+    virtual void BatchGetFileDetail(google::protobuf::RpcController* cntl_base,
+                      const BatchGetFileDetailRequest* request,
+                      BatchGetFileDetailResponse* response,
+                      google::protobuf::Closure* done);
+    virtual void GetFileDetail(google::protobuf::RpcController* cntl_base,
+                      const GetFileDetailRequest* request,
+                      GetFileDetailResponse* response,
+                      google::protobuf::Closure* done);
+                      
     void Init();
 };
 }

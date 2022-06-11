@@ -133,9 +133,9 @@ int main(int argc, char* argv[]) {
 
     ocean_kv::index::IndexInfo index_info1;
     index_info1.set_file_id(1);
-    index_info1.set_total_length(200000);
-    index_info1.set_head_length(62);
-    index_info1.set_shift(8000000);
+    index_info1.set_total_length(100000);
+    index_info1.set_head_length(52);
+    index_info1.set_shift(9000000);
     LOG(INFO) << "set1: " << SetIndexInfo("1", &index_info1);
 
     LOG(INFO) << "======get2: |" << GetIndexInfo("2");

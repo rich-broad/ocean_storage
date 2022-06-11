@@ -108,6 +108,55 @@ void MasterServiceImpl::HeartBeat(google::protobuf::RpcController* cntl_base,
     response->set_code(0);
 }
 
+void MasterServiceImpl::UpdateFileInfo(google::protobuf::RpcController* cntl_base,
+                      const UpdateFileInfoRequest* request,
+                      UpdateFileInfoResponse* response,
+                      google::protobuf::Closure* done) {
+    brpc::ClosureGuard done_guard(done);
+    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+
+    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
+              << " to " << cntl->local_side() << ": request_key: " << request->update_type();
+
+    LOG(INFO) << "end...";
+
+    // Fill response.
+    response->set_code(0);
+}
+
+
+void MasterServiceImpl::BatchGetFileDetail(google::protobuf::RpcController* cntl_base,
+                      const BatchGetFileDetailRequest* request,
+                      BatchGetFileDetailResponse* response,
+                      google::protobuf::Closure* done) {
+    brpc::ClosureGuard done_guard(done);
+    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+
+    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
+              << " to " << cntl->local_side() << ": request_key: ";
+
+    LOG(INFO) << "end...";
+
+    // Fill response.
+    response->set_code(0);
+}
+
+void MasterServiceImpl::GetFileDetail(google::protobuf::RpcController* cntl_base,
+                      const GetFileDetailRequest* request,
+                      GetFileDetailResponse* response,
+                      google::protobuf::Closure* done) {
+    brpc::ClosureGuard done_guard(done);
+    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+
+    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
+              << " to " << cntl->local_side() << ": request_key: ";
+
+    LOG(INFO) << "end...";
+
+    // Fill response.
+    response->set_code(0);
+}
+
 }
 }  // namespace ocean_kv
 

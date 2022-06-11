@@ -8,46 +8,70 @@
 //
 //   http://www.apache.org/licenses/LICENSE-2.0
 //
-// Unless required by applicable law or agreed to in writing,
+// Unless  by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
 
-syntax="proto2";
+syntax="proto3";
 package ocean_kv.master;
 
 option cc_generic_services = true;
 
 // data server调该接口
 message AllocFileIdRequest {
-      required uint32 file_id = 1; //希望分配的文件id, 可以不填，如果不填,则master分配一个可用的文件id
+      uint32 file_id = 1; //希望分配的文件id, 可以不填，如果不填,则master分配一个可用的文件id
 };
 
 message AllocFileIdResponse {
-      required uint32 code = 1;
-      required uint32 file_id = 2;
+      uint32 code = 1;
+      uint32 file_id = 2;
 };
 
 message GetAllFileIdsRequest {
-      required string page_context = 1; // 分页上下文
-      required uint32 page_size = 2; // 每次多少个
+      string page_context = 1; // 分页上下文
+      uint32 page_size = 2; // 每次多少个
 };
 
 message GetAllFileIdsResponse {
-      required uint32 code = 1;
+      uint32 code = 1;
       repeated uint32 file_ids = 2;
-      required bool has_next = 3; // 有没有下一页
-      required string page_context = 4; // 分页上下文
+      bool has_next = 3; // 有没有下一页
+      string page_context = 4; // 分页上下文
 };
+
+message GetFileDetailRequest {
+      uint32 file_id = 1;
+};
+
+message FileDetail {
+
+}
+
+message GetFileDetailResponse {
+      uint32 code = 1;
+      FileDetail file_detail = 2;
+};
+
+
+message BatchGetFileDetailRequest {
+      repeated uint32 file_ids = 1;
+};
+
+message BatchGetFileDetailResponse {
+      uint32 code = 1;
+      repeated FileDetail file_details = 2;
+};
+
 
 message LockClusterRequest {
 
 };
 
 message LockClusterResponse {
-      required uint32 code = 1;// 0--成功
+       uint32 code = 1;// 0--成功
 };
 
 message UnLockClusterRequest {
@@ -55,22 +79,50 @@ message UnLockClusterRequest {
 };
 
 message UnLockClusterResponse {
-      required uint32 code = 1;// 0--成功
+       uint32 code = 1;// 0--成功
 };
 
 message HeartBeatRequest {
-      required string server_name = 1;
+       string server_name = 1;
 };
 
 message HeartBeatResponse {
-      required uint32 code = 1;// 0--成功
+       uint32 code = 1;// 0--成功
+};
+
+enum UpdateFileInfoType {
+      Undefined = 0;
+      FileSize = 1;
+      FileStatus = 2;
+      FileLocation = 3;
+      FileBelongToTable = 4;
+};
+
+// 如果我们用raft作为一致性协议的话，这个位置应该是某个raft组的id，然后对这个raft组进行读写.
+message Location {
+       string data_server_group_id = 1; // 通过这个groupid即可知道具体位置
+}
+
+message UpdateFileInfoRequest {
+       UpdateFileInfoType update_type = 1;
+       uint32 size = 2;
+       uint32 status = 3;
+       Location location = 4;
+       string belong_to_table = 5;
+}
+
+message UpdateFileInfoResponse {
+      uint32 code = 1;// 0--成功
 };
 
 
 service MasterService {
       rpc AllocFileId(AllocFileIdRequest) returns (AllocFileIdResponse);
       rpc GetAllFileIds(GetAllFileIdsRequest) returns (GetAllFileIdsResponse);
+      rpc GetFileDetail(GetFileDetailRequest) returns (GetFileDetailResponse);
+      rpc BatchGetFileDetail(BatchGetFileDetailRequest) returns (BatchGetFileDetailResponse);
       rpc LockCluster(LockClusterRequest) returns (LockClusterResponse);
       rpc UnLockCluster(UnLockClusterRequest) returns (UnLockClusterResponse);
       rpc HeartBeat(HeartBeatRequest) returns (HeartBeatResponse);
+      rpc UpdateFileInfo(UpdateFileInfoRequest) returns (UpdateFileInfoResponse);
 };
