@@ -16,27 +16,28 @@
 // under the License.
 
 #include <json2pb/pb_to_json.h>
-#include "index.pb.h"
-#include "transaction_rocksdb_impl.h"
+#include "data.pb.h"
 
 namespace ocean_kv {
-namespace index {
-class IndexServiceImpl : public IndexService {
+namespace data {
+class DataServiceImpl : public DataService {
 public:
-    IndexServiceImpl() {};
-    virtual ~IndexServiceImpl() {};
-    virtual void GetIndexInfo(google::protobuf::RpcController* cntl_base,
-                      const GetIndexInfoRequest* request,
-                      GetIndexInfoResponse* response,
+    DataServiceImpl() {};
+    virtual ~DataServiceImpl() {};
+    virtual void GetData(google::protobuf::RpcController* cntl_base,
+                      const GetDataRequest* request,
+                      GetDataResponse* response,
                       google::protobuf::Closure* done);
-    virtual void SetIndexInfo(google::protobuf::RpcController* cntl_base,
-                      const SetIndexInfoRequest* request,
-                      SetIndexInfoResponse* response,
+    virtual void PutData(google::protobuf::RpcController* cntl_base,
+                      const PutDataRequest* request,
+                      PutDataResponse* response,
+                      google::protobuf::Closure* done);
+    virtual void DeleteData(google::protobuf::RpcController* cntl_base,
+                      const DeleteDataRequest* request,
+                      DeleteDataResponse* response,
                       google::protobuf::Closure* done);
 
     void Init();
-private:
-    TransactionRocksDB *_transaction_db;
 };
 }
 }  // namespace ocean_kv

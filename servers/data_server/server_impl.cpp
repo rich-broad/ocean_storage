@@ -18,64 +18,65 @@
 #include <gflags/gflags.h>
 #include <butil/logging.h>
 #include <brpc/server.h>
-#include "index.pb.h"
+#include "data.pb.h"
 #include "server_impl.h"
 
 namespace ocean_kv {
-namespace index {
-void IndexServiceImpl::Init() {
-    _transaction_db = new TransactionRocksDB();
-    _transaction_db->Init();
-}
+namespace data {
 
-void IndexServiceImpl::GetIndexInfo(google::protobuf::RpcController* cntl_base,
-                      const GetIndexInfoRequest* request,
-                      GetIndexInfoResponse* response,
-                      google::protobuf::Closure* done) {
-    brpc::ClosureGuard done_guard(done);
-
-    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+void DataServiceImpl::Init() {
     
-    std::string value = _transaction_db->Get(request->key());
-
-    // Fill response.
-    ocean_kv::index::IndexInfo* index_info = response->mutable_index_info();
-    index_info->ParseFromString(value);
-    response->set_code(0);
-
-    LOG(INFO) << "Received request[log_id=" << cntl->log_id() 
-              << "] from " << cntl->remote_side() 
-              << " to " << cntl->local_side()
-              << ": " << request->key()
-              << " (attached=" << cntl->request_attachment() << ")";
-
-    std::string json1;
-    json2pb::ProtoMessageToJson(*index_info, &json1, json2pb::Pb2JsonOptions());
-    LOG(INFO) << "======get1: |" << json1;
 }
 
-
-void IndexServiceImpl::SetIndexInfo(google::protobuf::RpcController* cntl_base,
-                      const SetIndexInfoRequest* request,
-                      SetIndexInfoResponse* response,
+void DataServiceImpl::GetData(google::protobuf::RpcController* cntl_base,
+                      const GetDataRequest* request,
+                      GetDataResponse* response,
                       google::protobuf::Closure* done) {
     brpc::ClosureGuard done_guard(done);
-
     brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
 
     LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
-              << " to " << cntl->local_side() << ": request_key: " << request->key()
-              << " (attached=" << cntl->request_attachment() << ")";
-
-    std::string value;
-    request->index_info().SerializeToString(&value);
-    _transaction_db->Set(request->key(), value);
+              << " to " << cntl->local_side() << ": request_key: " << request->key();
 
     LOG(INFO) << "end...";
 
     // Fill response.
     response->set_code(0);
 }
+
+void DataServiceImpl::PutData(google::protobuf::RpcController* cntl_base,
+                      const PutDataRequest* request,
+                      PutDataResponse* response,
+                      google::protobuf::Closure* done) {
+    brpc::ClosureGuard done_guard(done);
+    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+
+    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
+              << " to " << cntl->local_side() << ": request_key: " << request->key();
+
+    LOG(INFO) << "end...";
+
+    // Fill response.
+    response->set_code(0);
+}
+
+void DataServiceImpl::DeleteData(google::protobuf::RpcController* cntl_base,
+                      const DeleteDataRequest* request,
+                      DeleteDataResponse* response,
+                      google::protobuf::Closure* done) {
+    brpc::ClosureGuard done_guard(done);
+    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+
+    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
+              << " to " << cntl->local_side() << ": request_key: " << request->key();
+
+    LOG(INFO) << "end...";
+
+    // Fill response.
+    response->set_code(0);
+}
+
+
 }
 }  // namespace ocean_kv
 

@@ -18,7 +18,6 @@
 NEED_GPERFTOOLS=0
 BRPC_PATH=../../../deploy/brpc-1.1.0
 include $(BRPC_PATH)/config.mk
-include ../../../deploy/rocksdb_7.2.2/make_config.mk
 # Notes on the flags:
 # 1. Added -fno-omit-frame-pointer: perf/tcmalloc-profiler use frame pointers by default
 # 2. Added -D__const__= : Avoid over-optimizations of TLS variables by GCC>=4.8
@@ -27,9 +26,7 @@ ifeq ($(NEED_GPERFTOOLS), 1)
 	CXXFLAGS+=-DBRPC_ENABLE_CPU_PROFILER
 endif
 HDRS+=$(BRPC_PATH)/output/include
-HDRS+=../../../deploy/rocksdb_7.2.2/include
 LIBS+=$(BRPC_PATH)/output/lib
-LIBS+=../../../deploy/rocksdb_7.2.2
 
 HDRPATHS=$(addprefix -I, $(HDRS))
 LIBPATHS=$(addprefix -L, $(LIBS))
@@ -37,7 +34,7 @@ COMMA=,
 SOPATHS=$(addprefix -Wl$(COMMA)-rpath$(COMMA), $(LIBS))
 
 CLIENT_SOURCES = client.cpp
-SERVER_SOURCES = server.cpp simple_example.cpp
+SERVER_SOURCES = server.cpp server_impl.cpp
 PROTOS = $(wildcard *.proto)
 
 PROTO_OBJS = $(PROTOS:.proto=.pb.o)
@@ -60,8 +57,6 @@ else ifeq ($(SYSTEM),Linux)
 	LINK_OPTIONS = -Xlinker "-(" $^ -Wl,-Bstatic $(STATIC_LINKINGS) -Wl,-Bdynamic -Xlinker "-)" $(DYNAMIC_LINKINGS)
 endif
 
-STATIC_LINKINGS += ../../../deploy/rocksdb_7.2.2/librocksdb.a
-
 ifndef DISABLE_JEMALLOC
 	ifdef JEMALLOC
 		PLATFORM_CXXFLAGS += -DROCKSDB_JEMALLOC -DJEMALLOC_NO_DEMANGLE
@@ -77,14 +72,14 @@ endif
 CFLAGS += -Wstrict-prototypes
 
 .PHONY:all
-all: simple_kv_client simple_kv_server
+all: proxy_client proxy_server
 
 .PHONY:clean
 clean:
 	@echo "> Cleaning"
-	rm -rf simple_kv_client simple_kv_server $(PROTO_GENS) $(PROTO_OBJS) $(CLIENT_OBJS) $(SERVER_OBJS)
+	rm -rf proxy_client proxy_server $(PROTO_GENS) $(PROTO_OBJS) $(CLIENT_OBJS) $(SERVER_OBJS)
 
-simple_kv_client:$(PROTO_OBJS) $(CLIENT_OBJS)
+proxy_client:$(PROTO_OBJS) $(CLIENT_OBJS)
 	@echo "> Linking $@"
 ifneq ("$(LINK_SO)", "")
 	$(CXX) $(LIBPATHS) $(SOPATHS) $(LINK_OPTIONS_SO) -o $@
@@ -92,7 +87,7 @@ else
 	$(CXX) $(LIBPATHS) $(LINK_OPTIONS) -o $@
 endif
 
-simple_kv_server:$(PROTO_OBJS) $(SERVER_OBJS)
+proxy_server:$(PROTO_OBJS) $(SERVER_OBJS)
 	@echo "> Linking $@"
 ifneq ("$(LINK_SO)", "")
 	$(CXX) $(LIBPATHS) $(SOPATHS) $(LINK_OPTIONS_SO) -o $@

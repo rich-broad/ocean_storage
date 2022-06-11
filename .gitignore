@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+master_server/master_server
+master_server/master_client
+data_server/data_server
+data_server/data_client
+proxy_server/proxy_server
+proxy_server/proxy_client
+index_server/index_server
+index_server/index_client
+

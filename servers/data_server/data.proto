@@ -16,7 +16,7 @@
 // under the License.
 
 syntax="proto2";
-package ocean_kv.index;
+package ocean_kv.data;
 
 option cc_generic_services = true;
 
@@ -28,25 +28,38 @@ message IndexInfo {
       required uint64 shift = 4;
 }
 
-message GetIndexInfoRequest {
-      required string key = 1;
-};
-
-message GetIndexInfoResponse {
-      required uint32 code = 1;
-      required IndexInfo index_info = 2;
-};
-
-message SetIndexInfoRequest {
+message GetDataRequest {
       required string key = 1;
       required IndexInfo index_info = 2;
 };
 
-message SetIndexInfoResponse {
+message GetDataResponse {
       required uint32 code = 1;
+      required bytes data = 2;
 };
 
-service IndexService {
-      rpc GetIndexInfo(GetIndexInfoRequest) returns (GetIndexInfoResponse);
-      rpc SetIndexInfo(SetIndexInfoRequest) returns (SetIndexInfoResponse);
+message PutDataRequest {
+      required string key = 1;
+};
+
+message PutDataResponse {
+      required uint32 code = 1;
+      required IndexInfo index_info = 2;
+};
+
+message DeleteDataRequest {
+      required string key = 1;
+      required IndexInfo index_info = 2;
+      required bool need_data = 3;
+};
+
+message DeleteDataResponse {
+      required uint32 code = 1;
+      required bytes data = 2;
+};
+
+service DataService {
+      rpc GetData(GetDataRequest) returns (GetDataResponse);
+      rpc PutData(PutDataRequest) returns (PutDataResponse);
+      rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
 };

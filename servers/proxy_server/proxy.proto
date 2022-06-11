@@ -16,7 +16,7 @@
 // under the License.
 
 syntax="proto2";
-package ocean_kv;
+package ocean_kv.proxy;
 
 option cc_generic_services = true;
 
@@ -25,20 +25,32 @@ message GetRequest {
 };
 
 message GetResponse {
-      required string value = 1;
+      required uint32 code = 1;
+      required bytes value = 2;
 };
 
-message SetRequest {
+message PutRequest {
       required string key = 1;
-      required string value = 2;
+      required bytes value = 2;
 };
 
-message SetResponse {
+message PutResponse {
       required uint32 code = 1;
 };
 
 
-service SimpleKVService {
+message DeleteRequest {
+      required string key = 1;
+      required bool need_value = 2;
+};
+
+message DeleteResponse {
+      required uint32 code = 1;
+      required bytes value = 2;
+};
+
+service ProxyService {
       rpc Get(GetRequest) returns (GetResponse);
-      rpc Set(SetRequest) returns (SetResponse);
+      rpc Put(PutRequest) returns (PutResponse);
+      rpc Delete(DeleteRequest) returns (DeleteResponse);
 };

@@ -18,10 +18,10 @@
 #include <gflags/gflags.h>
 #include <butil/logging.h>
 #include <brpc/server.h>
-#include "index.pb.h"
+#include "proxy.pb.h"
 #include "server_impl.h"
 
-DEFINE_int32(port, 8001, "TCP Port of this server");
+DEFINE_int32(port, 8002, "TCP Port of this server");
 DEFINE_string(listen_addr, "", "Server listen address, may be IPV4/IPV6/UDS."
             " If this is set, the flag port will be ignored");
 DEFINE_int32(idle_timeout_s, -1, "Connection will be closed if there is no "
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     // Generally you only need one Server.
     brpc::Server server;
     // Instance of your service.
-    ocean_kv::index::IndexServiceImpl service_impl;
+    ocean_kv::proxy::ProxyServiceImpl service_impl;
     service_impl.Init();
     // Add the service into server. Notice the second parameter, because the
     // service is put on stack, we don't want server to delete it, otherwise

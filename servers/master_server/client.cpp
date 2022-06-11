@@ -22,7 +22,7 @@
 #include <butil/time.h>
 #include <brpc/channel.h>
 #include <json2pb/pb_to_json.h>
-#include "index.pb.h"
+#include "master.pb.h"
 
 DEFINE_string(protocol, "baidu_std", "Protocol type. Defined in src/brpc/options.proto");
 DEFINE_string(connection_type, "", "Connection type. Available values: single, pooled, short");
@@ -36,7 +36,7 @@ struct BrpcClient {
     // A Channel represents a communication line to a Server. Notice that 
     // Channel is thread-safe and can be shared by all threads in your program.
     brpc::Channel channel;
-    ocean_kv::index::IndexService_Stub *stub;
+    ocean_kv::master::MasterService_Stub *stub;
     void Init();
 
     ~BrpcClient(){delete stub;}
@@ -55,20 +55,20 @@ void BrpcClient::Init() {
     }
     // Normally, you should not call a Channel directly, but instead construct
     // a stub Service wrapping it. stub can be shared by all threads as well.
-    stub = new ocean_kv::index::IndexService_Stub(&channel);
+    stub = new ocean_kv::master::MasterService_Stub(&channel);
 }
 
 BrpcClient *client = nullptr;
-
-uint32_t SetIndexInfo(const std::string &key, const ocean_kv::index::IndexInfo* index_info) {
+/*
+uint32_t SetIndexInfo(const std::string &key, const ocean_kv::IndexInfo* index_info) {
     // Send a request and wait for the response every 1 second.
     int log_id = 0;
-    ocean_kv::index::SetIndexInfoRequest request;
-    ocean_kv::index::SetIndexInfoResponse response;
+    ocean_kv::SetIndexInfoRequest request;
+    ocean_kv::SetIndexInfoResponse response;
     brpc::Controller cntl;
 
     request.set_key(key);
-    ocean_kv::index::IndexInfo* tmp = request.mutable_index_info();
+    ocean_kv::IndexInfo* tmp = request.mutable_index_info();
     tmp->set_file_id(index_info->file_id());
     tmp->set_total_length(index_info->total_length());
     tmp->set_head_length(index_info->head_length());
@@ -95,8 +95,8 @@ uint32_t SetIndexInfo(const std::string &key, const ocean_kv::index::IndexInfo* 
 
 std::string GetIndexInfo(const std::string &key) {
     int log_id = 0;
-    ocean_kv::index::GetIndexInfoRequest request;
-    ocean_kv::index::GetIndexInfoResponse response;
+    ocean_kv::GetIndexInfoRequest request;
+    ocean_kv::GetIndexInfoResponse response;
     brpc::Controller cntl;
 
     request.set_key(key);
@@ -117,31 +117,15 @@ std::string GetIndexInfo(const std::string &key) {
     json2pb::ProtoMessageToJson(response.index_info(), &json2, json2pb::Pb2JsonOptions());
     return json2;
 }
-
+*/
 int main(int argc, char* argv[]) {
     // Parse gflags. We recommend you to use gflags as well.
     GFLAGS_NS::ParseCommandLineFlags(&argc, &argv, true);
     client = new BrpcClient();
     client->Init();
 
-    ocean_kv::index::IndexInfo index_info;
-    index_info.set_file_id(2);
-    index_info.set_total_length(200000);
-    index_info.set_head_length(62);
-    index_info.set_shift(8000000);
-    LOG(INFO) << "set2: " << SetIndexInfo("2", &index_info);
-
-    ocean_kv::index::IndexInfo index_info1;
-    index_info1.set_file_id(1);
-    index_info1.set_total_length(200000);
-    index_info1.set_head_length(62);
-    index_info1.set_shift(8000000);
-    LOG(INFO) << "set1: " << SetIndexInfo("1", &index_info1);
-
-    LOG(INFO) << "======get2: |" << GetIndexInfo("2");
-    LOG(INFO) << "======get1: |" << GetIndexInfo("1");
-
     LOG(INFO) << "Client is going to quit";
     delete client;
     return 0;
 }
+

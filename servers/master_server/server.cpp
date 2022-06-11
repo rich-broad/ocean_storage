@@ -18,10 +18,10 @@
 #include <gflags/gflags.h>
 #include <butil/logging.h>
 #include <brpc/server.h>
-#include "simple_kv.pb.h"
-#include "simple_example.h"
+#include "master.pb.h"
+#include "server_impl.h"
 
-DEFINE_int32(port, 8000, "TCP Port of this server");
+DEFINE_int32(port, 8002, "TCP Port of this server");
 DEFINE_string(listen_addr, "", "Server listen address, may be IPV4/IPV6/UDS."
             " If this is set, the flag port will be ignored");
 DEFINE_int32(idle_timeout_s, -1, "Connection will be closed if there is no "
@@ -29,82 +29,13 @@ DEFINE_int32(idle_timeout_s, -1, "Connection will be closed if there is no "
 DEFINE_int32(logoff_ms, 2000, "Maximum duration of server's LOGOFF state "
              "(waiting for client to close connection before server stops)");
 
-namespace ocean_kv {
-class SimpleKVServiceImpl : public SimpleKVService {
-public:
-    SimpleKVServiceImpl() {};
-    virtual ~SimpleKVServiceImpl() {};
-    virtual void Get(google::protobuf::RpcController* cntl_base,
-                      const GetRequest* request,
-                      GetResponse* response,
-                      google::protobuf::Closure* done);
-    virtual void Set(google::protobuf::RpcController* cntl_base,
-                      const SetRequest* request,
-                      SetResponse* response,
-                      google::protobuf::Closure* done);
-
-    void Init();
-private:
-    SimpleRocksDB *db;
-};
-
-void SimpleKVServiceImpl::Init() {
-    db = new SimpleRocksDB();
-    db->Init();
-}
-
-void SimpleKVServiceImpl::Get(google::protobuf::RpcController* cntl_base,
-                      const GetRequest* request,
-                      GetResponse* response,
-                      google::protobuf::Closure* done) {
-    brpc::ClosureGuard done_guard(done);
-
-    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
-    
-    std::string value = db->Get(request->key());
-
-    LOG(INFO) << "Received request[log_id=" << cntl->log_id() 
-              << "] from " << cntl->remote_side() 
-              << " to " << cntl->local_side()
-              << ": " << request->key() << "=" << value
-              << " (attached=" << cntl->request_attachment() << ")";
-
-    // Fill response.
-    response->set_value(value);
-}
-
-
-void SimpleKVServiceImpl::Set(google::protobuf::RpcController* cntl_base,
-                      const SetRequest* request,
-                      SetResponse* response,
-                      google::protobuf::Closure* done) {
-    brpc::ClosureGuard done_guard(done);
-
-    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
-
-    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
-              << " to " << cntl->local_side() << ": request_key: " << request->key() << " value: " <<  request->value()
-              << " (attached=" << cntl->request_attachment() << ")";
-
-    db->Set(request->key(), request->value());
-
-    LOG(INFO) << "end...";
-
-    // Fill response.
-    response->set_code(0);
-}
-
-
-
-}  // namespace ocean_kv
-
 int main(int argc, char* argv[]) {
     // Parse gflags. We recommend you to use gflags as well.
     GFLAGS_NS::ParseCommandLineFlags(&argc, &argv, true);
     // Generally you only need one Server.
     brpc::Server server;
     // Instance of your service.
-    ocean_kv::SimpleKVServiceImpl service_impl;
+    ocean_kv::master::MasterServiceImpl service_impl;
     service_impl.Init();
     // Add the service into server. Notice the second parameter, because the
     // service is put on stack, we don't want server to delete it, otherwise
