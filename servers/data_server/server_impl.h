@@ -37,6 +37,13 @@ public:
                       DeleteDataResponse* response,
                       google::protobuf::Closure* done);
 
+    virtual void SyncDataToSlave(google::protobuf::RpcController* cntl_base,
+                      const SyncDataToSlaveRequest* request,
+                      SyncDataToSlaveResponse* response,
+                      google::protobuf::Closure* done);
+
+    
+
     void Init();
 };
 }

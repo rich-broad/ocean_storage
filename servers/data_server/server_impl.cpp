@@ -76,6 +76,21 @@ void DataServiceImpl::DeleteData(google::protobuf::RpcController* cntl_base,
     response->set_code(0);
 }
 
+void DataServiceImpl::SyncDataToSlave(google::protobuf::RpcController* cntl_base,
+                      const SyncDataToSlaveRequest* request,
+                      SyncDataToSlaveResponse* response,
+                      google::protobuf::Closure* done) {
+    brpc::ClosureGuard done_guard(done);
+    brpc::Controller* cntl = static_cast<brpc::Controller*>(cntl_base);
+
+    LOG(INFO) << "Received request[log_id=" << cntl->log_id() << "] from " << cntl->remote_side() 
+              << " to " << cntl->local_side() << ": request_key: " << request->key();
+
+    LOG(INFO) << "end...";
+
+    // Fill response.
+    response->set_code(0);
+}
 
 }
 }  // namespace ocean_kv
